@@ -48,5 +48,5 @@ app.layout = html.Div([
         max=15,
         step=5,
         value=0,
-        marks={0: "Bez batérie", 5: "5 kWh", 10: "10 kWh
+        marks={0: "Bez batérie", 5: "5 kWh", 10: "10 kWh", 15: "15 kWh"}
 
