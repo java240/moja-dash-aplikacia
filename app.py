@@ -2,7 +2,7 @@ from dash import Dash, html, dcc, Input, Output
 import plotly.graph_objects as go
 
 # Inicializácia aplikácie
-app = Dash(__name__)
+app = Dash(__name__) 
 
 # Funkcia na výpočet návratnosti
 def vypocitaj_navratnost(percento_vlastnej_spotreby, velkost_baterie):
@@ -12,7 +12,7 @@ def vypocitaj_navratnost(percento_vlastnej_spotreby, velkost_baterie):
     cena_virtualnej_baterie = 36  # €/rok
     cena_fyzickej_baterie = 3900  # €
 
-    # Výpočty
+    # Výpočty  
     vlastna_spotreba = percento_vlastnej_spotreby / 100 * rocna_vyroba
     uspora_vlastna = vlastna_spotreba * cena_energie / 1000  # €/rok
 
@@ -49,4 +49,32 @@ app.layout = html.Div([
         step=5,
         value=0,
         marks={0: "Bez batérie", 5: "5 kWh", 10: "10 kWh", 15: "15 kWh"}
+    ),
+    dcc.Graph(id="graf-navratnosti")
+])
+
+# Callback na aktualizáciu grafu
+@app.callback(
+    Output("graf-navratnosti", "figure"),
+    [Input("slider-spotreba", "value"),
+     Input("slider-bateria", "value")]
+)
+def aktualizuj_graf(percento_vlastnej_spotreby, velkost_baterie):
+    navratnost = vypocitaj_navratnost(percento_vlastnej_spotreby, velkost_baterie)
+
+    # Graf
+    fig = go.Figure(
+        data=[go.Bar(x=["Návratnosť investície"], y=[navratnost], text=[f"{navratnost:.2f} roka"], textposition="auto")]
+    )
+    fig.update_layout(
+        title="Návratnosť investície (v rokoch)",
+        yaxis=dict(title="Roky"),
+        xaxis=dict(title=""),
+        template="plotly_white"
+    )
+    return fig
+
+# Spustenie servera
+if __name__ == "__main__":
+    app.run_server(debug=True, host="0.0.0.0", port=8000)
 
